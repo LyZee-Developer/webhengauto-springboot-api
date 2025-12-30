@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: hgseviceweb
+
+  datasource:
+    url: jdbc:postgresql://192.168.0.10:5434/db-auto
+    username: lyleangheng
+    password: heng@123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  # session:
+  #   store-type: none   # ✅ DISABLE SPRING SESSION
+  session:
+  store-type: jdbc
+  jdbc:
+    initialize-schema: always
+
+server:
+  port: 4433
