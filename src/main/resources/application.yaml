@@ -17,13 +17,16 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-
   # session:
   #   store-type: none   # ✅ DISABLE SPRING SESSION
-  session:
-  store-type: jdbc
-  jdbc:
-    initialize-schema: always
-
+  # session:
+  # store-type: jdbc
+  # jdbc:
+  #   initialize-schema: always
 server:
   port: 4433
+
+file:
+  upload-img-dir: src/main/resources/static/upload
+  # upload-img-client: /images/**
+  # upload-file-dir: filestorage/data/
