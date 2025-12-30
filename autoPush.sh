@@ -4,19 +4,11 @@ if [[ -z $msd ]]; then
     echo "please input message to commit our code 👈"
     exit 1
 fi
-
 branch=$(git branch --show-current)
-if [[ $branch == "master" ]]; then
-    read -p "Are you sure to push code to master 👈 (y/n): " push
-    if [[ $push=="y" || $push=="Y" ]]; then
-            git add .
-            git commit -m "$msd"
-            git push -u origin master
-    else 
-        exit 1
-    fi
+if [[ $branch != "master" ]]; then
+    echo " ❌ Please checkout to master for commit our code "
+    exit 1
 fi 
-
 git add .
 git commit -m "$msd"
-git push -u origin $branch
+git push -u origin master
