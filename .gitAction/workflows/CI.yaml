@@ -1,0 +1,35 @@
+on:
+    push:
+        branches:
+            - master
+env:
+    IMAGE_NAME: hengautosvc-springboot
+jobs:
+    build-push:
+        runs-on: ubuntu-latest
+        environment: DOCKER_ENV
+        steps:
+            - name: Clone code
+              uses: actions/checkout@v3
+            - name: Use with SHA
+              run: |
+                echo "TAG=${GITHUB_SHA::8}" >> $GITHUB_ENV
+            - name: Show Tag
+              run: |
+                echo "TAG is ${{ env.TAG }} "
+            - name: Login to Docker
+              run: |
+                echo "${{ secrets.PW }}" | docker login -u "${{ secrets.USERNAME }}" --password-stdin
+            - name: Build Image for docker hub
+              run: |
+                docker build -t   ${{ secrets.USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.TAG }} -f Dockerfile .
+            - name: Push DockerHub
+              run: |
+                docker push ${{ secrets.USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}
+            - name: Check Container
+              run: |
+                docker ps
+            - name: Logout from registry
+              if: always()
+              run: |
+                docker logout
