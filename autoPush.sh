@@ -12,7 +12,8 @@ if [[ $branch == "master" ]]; then
             git add .
             git commit -m "$msd"
             git push -u origin master
-    else  exit 1
+    else 
+        exit 1
     fi
 fi 
 
