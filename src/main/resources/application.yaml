@@ -3,9 +3,9 @@ spring:
     name: hgseviceweb
 
   datasource:
-    url: jdbc:postgresql://192.168.0.10:5434/db-auto
-    username: lyleangheng
-    password: heng@123
+    url: jdbc:postgresql://34.142.158.113:8094/hengautoservice-database
+    username: heng-auto-service
+    password: Work@1234567890
     driver-class-name: org.postgresql.Driver
 
   jpa:
