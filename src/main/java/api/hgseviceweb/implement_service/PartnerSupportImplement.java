@@ -36,7 +36,7 @@ public class PartnerSupportImplement implements  PartnerSupportService {
         if(filter.getId() != null && filter.getId()>0) list = list.stream().filter(s->s.getId().equals(filter.getId())).collect(Collectors.toList());
         var totalRecord = list.size();
          if(filter.getPage() !=null && filter.getRecord()!=null && filter.getPage()>0 && filter.getRecord()>0){
-            list = list.stream().skip(filter.getPage()-1).limit(filter.getRecord()*filter.getPage()).collect(Collectors.toList());
+            list = list.stream().skip((filter.getPage()-1) * filter.getRecord()).limit(filter.getRecord()).collect(Collectors.toList());
         }
         return list.stream().map(s->{
             var pathImage = "";

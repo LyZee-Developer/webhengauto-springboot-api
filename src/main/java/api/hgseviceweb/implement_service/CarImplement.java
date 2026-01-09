@@ -18,12 +18,11 @@ import api.hgseviceweb.repository.ImageRepository;
 import api.hgseviceweb.service.CarService;
 import api.hgseviceweb.specification.CarSpec;
 import api.hgseviceweb.util.UploadImageHandler;
-
 import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class CarImplement implements  CarService {
-    private final CarRepository  carRepository;
+    private final CarRepository  carRepository; 
     private final ImageRepository  imageRepository;
     @Override
     public List<CarDto> List(CarFilterDataModel filter){
@@ -37,12 +36,12 @@ public class CarImplement implements  CarService {
         if(filter.getId() != null && filter.getId()>0) list = list.stream().filter(s->s.getId().equals(filter.getId())).collect(Collectors.toList());
         var totalRecord = list.size();
          if(filter.getPage() !=null && filter.getRecord()!=null && filter.getPage()>0 && filter.getRecord()>0){
-            list = list.stream().skip(filter.getPage()-1).limit(filter.getRecord()*filter.getPage()).collect(Collectors.toList());
+             list = list.stream().skip((filter.getPage()-1) * filter.getRecord()).limit(filter.getRecord()).collect(Collectors.toList());
         }
         return list.stream().map(s->{
             var pathImage = "";
             var img = imageRepository.findByRefIdAndType(s.getId(), CarHelper.FolderName.Car.toUpperCase());
-            if(img!=null) pathImage = img.getHostImage()+"/"+img.getPathImage();
+            if(img!=null) pathImage = img.getPathImage();
             return CarMapper.MaptoDto(s,totalRecord,pathImage);
         }).collect(Collectors.toList());
     }
@@ -54,7 +53,7 @@ public class CarImplement implements  CarService {
         var image = new DB_IMAGE();
         //upload image
         var PathImage = "";
-        if(model.getUpload()!=null){
+        if(model.getUpload().getBase64Text()!=null){
             var upload = new UploadImageHandler(CarHelper.FolderName.Car);
             var dto = upload.Upload(model.getUpload());
             image.setHostImage(dto.getHostName());
@@ -67,7 +66,7 @@ public class CarImplement implements  CarService {
             imageRepository.save(image);
             PathImage=image.getHostImage()+"/"+image.getPathImage();
         }
-        var result = CarMapper.MaptoDto(data,1,PathImage);
+        var result = CarMapper.MaptoDto(data,1,image.getPathImage());
         return result;
     }
 
@@ -84,7 +83,7 @@ public class CarImplement implements  CarService {
         data.setUpdatedDate(new Date());
         data.setDbCode(GlobalHelper.Str.GlobalDatabase);
         carRepository.save(data);
-        if(model.getUpload()!=null){
+        if(model.getUpload().getBase64Text()!=null){
             if(image!=null) {
                 upload.DeleteImage(image.getNameImage());
                 imageRepository.delete(image);

@@ -61,14 +61,20 @@ public class UploadImageHandler {
     public UploadDto Upload(UploadDataModel model) {
         try {
             var dto = new UploadDto();
-            byte[] fileBytes = Base64.getDecoder().decode(model.getBase64Text());
+              String base64 = model.getBase64Text();
+
+            // REMOVE data:image/...;base64, part
+            if (base64.contains(",")) {
+                base64 = base64.substring(base64.indexOf(",") + 1);
+            }
+            byte[] fileBytes = Base64.getDecoder().decode(base64);
             var folderPath = GlobalHelper.Path.upload + "\\" + this.FolderName;
             // Create folder if not exists
             Path uploadPath = Paths.get(folderPath);
             if (!Files.exists(uploadPath))
                 Files.createDirectories(uploadPath);
             // Create storage path
-            String fileName = System.currentTimeMillis() + "_" + model.getName().replace(" ", "_")+"."+model.getTypeImage();
+            String fileName = System.currentTimeMillis() + "_" + model.getName().replace(" ", "_");
             Path filePath = uploadPath.resolve(fileName);
             // Save file
             Files.write(filePath, fileBytes);

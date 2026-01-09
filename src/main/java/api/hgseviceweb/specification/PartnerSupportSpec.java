@@ -7,11 +7,11 @@ import api.hgseviceweb.entity.DB_PARTNER_SUPPORT;
 public class PartnerSupportSpec {
     public static Specification<DB_PARTNER_SUPPORT> Search(String search) {
         return (root, query, builder) -> {
-            if(search==null) return builder.conjunction();
+            if(search==null || search.equals("")) return builder.conjunction();
             return builder.or(
-                builder.like(root.get("DB_CODE"),"%"+search+"%"),
-                builder.like(root.get("NAME_EN"),"%"+search+"%"),
-                builder.like(root.get("NAME"),"%"+search+"%")
+                builder.like(root.get("dbCode"),"%"+search+"%"),
+                builder.like(root.get("nameEn"),"%"+search+"%"),
+                builder.like(root.get("name"),"%"+search+"%")
             );
         };
     }

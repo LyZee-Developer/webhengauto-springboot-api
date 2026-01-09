@@ -62,6 +62,7 @@ public  class CarController {
             return new ApiResponseHandler().SetDetail(CarHelper.Message.NotFound,HttpStatus.BAD_REQUEST);
         }
         var result = carImplement.Delete(Id);
+        carImplement.DeleteImage(Id);
         return ResponseEntity.ok(result);
     }
 
