@@ -14,7 +14,6 @@ import api.hgseviceweb.implement_service.AuthAccessImplement;
 import api.hgseviceweb.implement_service.UserImplement;
 import api.hgseviceweb.repository.AuthAccessRepository;
 import api.hgseviceweb.security.ApiResponseHandler;
-
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -36,21 +35,20 @@ public class AuthAccessController {
 
     public ResponseEntity<?> Create(AuthAccessDataModel model) {
         try {
-            if (Objects.isNull(model.getUserId()) || model.getUserId() < 1) {
-                return new ResponseEntity<>(new ApiResponseHandler().SetDetail("UserId is required!"),
-                        HttpStatus.BAD_REQUEST);
-            }
-            var checkType = AuthAccessHelper.Type.Type.contains(model.getType());
-            if(!checkType) return new ResponseEntity<>(new ApiResponseHandler().SetDetail("Invalid type A(Admin) O(Other))!"),HttpStatus.BAD_REQUEST);
-             var ListType = authAccessRepository.findAll().stream().filter(s ->s.getType().trim().equals(model.getType()) && s.getStatus() && s.getUserId().longValue()==model.getUserId()).collect(Collectors.toList());
-            if(!ListType.isEmpty()){
-                 return new ResponseEntity<>(new ApiResponseHandler().SetDetail("This user have already type"+(model.getType().trim().equals("A")?"(Admin)":"(Other)")),HttpStatus.BAD_REQUEST);
-            }
-            var existed = userImplement.IsExistedUserById(model.getUserId());
-            if(existed) return new ResponseEntity<>(new ApiResponseHandler().SetDetail("User not found"),HttpStatus.NOT_FOUND);
-            var existedName = authAccessImplement.CheckUsername(model.getUserName(),0L);
-            if(existedName) return new ResponseEntity<>(new ApiResponseHandler().SetDetail("Username have already!"),HttpStatus.NOT_FOUND);
-           
+            // if (Objects.isNull(model.getUserId()) || model.getUserId() < 1) {
+            //     return new ResponseEntity<>(new ApiResponseHandler().SetDetail("UserId is required!"),
+            //             HttpStatus.BAD_REQUEST);
+            // }
+            // var checkType = AuthAccessHelper.Type.Type.contains(model.getType());
+            // if(!checkType) return new ResponseEntity<>(new ApiResponseHandler().SetDetail("Invalid type A(Admin) O(Other))!"),HttpStatus.BAD_REQUEST);
+            //  var ListType = authAccessRepository.findAll().stream().filter(s ->s.getType().trim().equals(model.getType()) && s.getStatus() && s.getUserId().longValue()==model.getUserId()).collect(Collectors.toList());
+            // if(!ListType.isEmpty()){
+            //      return new ResponseEntity<>(new ApiResponseHandler().SetDetail("This user have already type"+(model.getType().trim().equals("A")?"(Admin)":"(Other)")),HttpStatus.BAD_REQUEST);
+            // }
+            // var existed = userImplement.IsExistedUserById(model.getUserId());
+            // if(existed) return new ResponseEntity<>(new ApiResponseHandler().SetDetail("User not found"),HttpStatus.NOT_FOUND);
+            // var existedName = authAccessImplement.CheckUsername(model.getUserName(),0L);
+            // if(existedName) return new ResponseEntity<>(new ApiResponseHandler().SetDetail("Username have already!"),HttpStatus.NOT_FOUND);
             var result = authAccessImplement.Create(model);
             return ResponseEntity.ok(result);
         } catch (Exception e) {

@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import org.hibernate.cfg.Environment;
+import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,9 +26,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UploadImageHandler {
+    @Autowired
+    private Environment env;
+    @Value("${server.port}")
+    private int port;
     private PortReader portReader;
     private String FolderName;
-    private Environment environment;
     private String folderUpload;
     public UploadImageHandler(String FolderName) {
         this.FolderName = FolderName.toLowerCase();
@@ -35,8 +40,10 @@ public class UploadImageHandler {
     @Async
     public UploadDto Upload(MultipartFile file) {
         try {
+            var global = new GlobalHelper();
+            var workingDir = global.getCurrentPathUpload();
             var dto = new UploadDto();
-            var folderPath = GlobalHelper.Path.upload + "\\" + this.FolderName;
+            var folderPath = workingDir + "\\upload\\" + this.FolderName;
             // Create folder if not exists
             Path uploadPath = Paths.get(folderPath);
             if (!Files.exists(uploadPath))
@@ -60,6 +67,11 @@ public class UploadImageHandler {
     @Async
     public UploadDto Upload(UploadDataModel model) {
         try {
+            var global = new GlobalHelper();
+            var workingDir = global.getCurrentPathUpload();
+            // int port2 = Integer.parseInt(env.getProperty("server.port"));
+            System.out.print("port is "+ this.port);
+            // System.out.print("port is "+ port2);
             var dto = new UploadDto();
               String base64 = model.getBase64Text();
 
@@ -68,7 +80,8 @@ public class UploadImageHandler {
                 base64 = base64.substring(base64.indexOf(",") + 1);
             }
             byte[] fileBytes = Base64.getDecoder().decode(base64);
-            var folderPath = GlobalHelper.Path.upload + "\\" + this.FolderName;
+            // var folderPath = GlobalHelper.Path.upload + "\\" + this.FolderName;
+            var folderPath = workingDir + "\\upload\\" + this.FolderName;
             // Create folder if not exists
             Path uploadPath = Paths.get(folderPath);
             if (!Files.exists(uploadPath))
@@ -121,7 +134,9 @@ public class UploadImageHandler {
 
     public Boolean DeleteImage(String filename){
         try {
-             var folderPath = GlobalHelper.Path.upload + "\\" + this.FolderName;
+            var global = new GlobalHelper();
+            var workingDir = global.getCurrentPathUpload();
+             var folderPath = workingDir + "\\upload\\" + this.FolderName;
             Path filePath = Paths.get(folderPath,filename);
             if(Files.exists(filePath)) {
                 Files.delete(filePath);

@@ -11,8 +11,8 @@ import api.hgseviceweb.helper.GlobalHelper;
 public class AuthAccessMapper {
     public  static DB_AUTH_ACCESS MaptoEntity(AuthAccessDataModel model){
         var data = new DB_AUTH_ACCESS();
-        data.setType(model.getType());
-        data.setUserId(model.getUserId());
+        data.setType("A");
+        data.setUserId(1L);
         data.setUsername(model.getUserName());
         data.setPassword(model.getPassword());
         data.setStatus(model.getStatus());
