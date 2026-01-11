@@ -15,9 +15,9 @@ import api.hgseviceweb.mapper.AuthAccessMapper;
 import api.hgseviceweb.repository.AuthAccessRepository;
 import api.hgseviceweb.service.AuthAccessService;
 import api.hgseviceweb.specification.AuthAccessSpec;
-
 import lombok.AllArgsConstructor;
-@AllArgsConstructor
+import lombok.RequiredArgsConstructor;
+@RequiredArgsConstructor
 @Service
 public class AuthAccessImplement implements  AuthAccessService {
     private final AuthAccessRepository  authAccessRepository;

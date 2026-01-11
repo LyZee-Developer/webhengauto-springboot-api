@@ -1,18 +1,14 @@
 package api.hgseviceweb.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 
 @Component
 public class PortReader {
-
-    // private final int port;
-
-    // public PortReader(ServletWebServerApplicationContext context) {
-    //     this.port = context.getWebServer().getPort();
-    // }
-
-    // public int getPort() {
-    //     return port;
-    // }
+    @Value("${server.port}")
+    private String serverPort;
+    public void printConfig() {
+        System.out.println(serverPort);
+    }
 }

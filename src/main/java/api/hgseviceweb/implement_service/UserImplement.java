@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import api.hgseviceweb.data_model.user.UserDataModel;
@@ -18,12 +19,18 @@ import api.hgseviceweb.service.UserService;
 import api.hgseviceweb.specification.UserSpec;
 import api.hgseviceweb.util.UploadImageHandler;
 
-import lombok.AllArgsConstructor;
-@AllArgsConstructor
+// import lombok.AllArgsConstructor;
+// @AllArgsConstructor
 @Service
 public class UserImplement implements  UserService {
     private final UserRepository  userRepository;
     private final ImageRepository  imageRepository;
+    private final String  serverPort;
+    public UserImplement(UserRepository userRepository,ImageRepository imageRepository,@Value("${server.port}") String serverPort){
+        this.userRepository = userRepository;
+        this.imageRepository = imageRepository;
+        this.serverPort = serverPort;
+    }
     @Override
     public List<UserDto> List(UserFilterDataModel filter){
         var list = userRepository.findAll(UserSpec.Search(filter.getSearch()).and(UserSpec.OrderDir(filter.getOrderDir(),filter.getOrderBy())));
@@ -52,7 +59,7 @@ public class UserImplement implements  UserService {
         var image = new DB_IMAGE();
         var PathImage = "";
         if(model.getUpload()!=null){
-            var upload = new UploadImageHandler(UserHelper.FolderName.User);
+            var upload = new UploadImageHandler(UserHelper.FolderName.User,this.serverPort);
             var dto = upload.Upload(model.getUpload());
             image.setHostImage(dto.getHostName());
             image.setNameImage(dto.getFilename());
@@ -72,7 +79,7 @@ public class UserImplement implements  UserService {
     public UserDto Update(UserDataModel model){
         var image = imageRepository.findByRefIdAndType(model.getId(), UserHelper.FolderName.User);
         var data = userRepository.findById(model.getId()).get();
-        var upload = new UploadImageHandler(UserHelper.FolderName.User.toLowerCase());
+        var upload = new UploadImageHandler(UserHelper.FolderName.User.toLowerCase(),this.serverPort);
         var PathImage="";
         data.setName(model.getName());
         data.setNameEn(model.getEnglishName());
@@ -129,7 +136,7 @@ public class UserImplement implements  UserService {
     }
     @Override
     public Boolean DeleteImage(Long imageId){
-        var upload = new UploadImageHandler(UserHelper.FolderName.User.toLowerCase());
+        var upload = new UploadImageHandler(UserHelper.FolderName.User.toLowerCase(),this.serverPort);
         var image = imageRepository.findById(imageId);
         if(!image.isEmpty()){
             upload.DeleteImage(image.get().getNameImage());

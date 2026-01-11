@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import api.hgseviceweb.data_model.partner_support.PartnerSupportDataModel;
@@ -19,12 +20,18 @@ import api.hgseviceweb.service.PartnerSupportService;
 import api.hgseviceweb.specification.PartnerSupportSpec;
 import api.hgseviceweb.util.UploadImageHandler;
 
-import lombok.AllArgsConstructor;
+// import lombok.AllArgsConstructor;
 @Service
-@AllArgsConstructor
+// @AllArgsConstructor
 public class PartnerSupportImplement implements  PartnerSupportService {
     private final PartnerSupportRepository  partnerSupportRepository;
     private final ImageRepository  imageRepository;
+    private final String  port;
+    public PartnerSupportImplement(PartnerSupportRepository partnerSupportRepository,ImageRepository imageRepository,@Value("${server.port}") String port){
+        this.partnerSupportRepository = partnerSupportRepository;
+        this.imageRepository = imageRepository;
+        this.port = port;
+    }
     @Override
     public List<PartnerSupportDto> List(PartnerSupportFilterDataModel filter){
         var list = partnerSupportRepository.findAll(PartnerSupportSpec.Search(filter.getSearch()).and(PartnerSupportSpec.OrderDir(filter.getOrderDir(),filter.getOrderBy())));
@@ -53,7 +60,7 @@ public class PartnerSupportImplement implements  PartnerSupportService {
         var data = partnerSupportRepository.save(mapData);
         var PathImage = "";
         if(model.getUpload()!=null){
-            var upload = new UploadImageHandler(PartnerSupportHelper.FolderName.PartnerSupport);
+            var upload = new UploadImageHandler(PartnerSupportHelper.FolderName.PartnerSupport,this.port);
             var dto = upload.Upload(model.getUpload());
             image.setHostImage(dto.getHostName());
             image.setNameImage(dto.getFilename());
@@ -73,7 +80,7 @@ public class PartnerSupportImplement implements  PartnerSupportService {
     public PartnerSupportDto Update(PartnerSupportDataModel model){
         var image = imageRepository.findByRefIdAndType(model.getId(), PartnerSupportHelper.FolderName.PartnerSupport);
         var data = partnerSupportRepository.findById(model.getId()).get();
-        var upload = new UploadImageHandler(PartnerSupportHelper.FolderName.PartnerSupport.toLowerCase());
+        var upload = new UploadImageHandler(PartnerSupportHelper.FolderName.PartnerSupport.toLowerCase(),this.port);
         var PathImage="";
         data.setName(model.getName());
         data.setNameEn(model.getEnglishName());
@@ -110,7 +117,7 @@ public class PartnerSupportImplement implements  PartnerSupportService {
     }
     @Override
     public Boolean DeleteImage(Long imageId){
-        var upload = new UploadImageHandler(PartnerSupportHelper.FolderName.PartnerSupport.toLowerCase());
+        var upload = new UploadImageHandler(PartnerSupportHelper.FolderName.PartnerSupport.toLowerCase(),this.port);
         var image = imageRepository.findById(imageId);
         if(!image.isEmpty()){
             upload.DeleteImage(image.get().getNameImage());

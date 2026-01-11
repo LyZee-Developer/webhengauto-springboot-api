@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import api.hgseviceweb.data_model.portfolio.PortfolioDataModel;
@@ -20,12 +22,20 @@ import api.hgseviceweb.service.PortfolioService;
 import api.hgseviceweb.specification.PortfolioSpec;
 import api.hgseviceweb.util.UploadImageHandler;
 
-import lombok.AllArgsConstructor;
+// import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 @Service
-@AllArgsConstructor
+// @RequiredArgsConstructor
 public class PortfolioImplement implements  PortfolioService {
+
     private final PortfolioRepository  portfolioRepository;
     private final ImageRepository  imageRepository;
+    private final String  serverPort;
+    public PortfolioImplement(PortfolioRepository portfolioRepository,ImageRepository imageRepository,@Value("${server.port}") String serverPort){
+        this.imageRepository =  imageRepository;
+        this.portfolioRepository =  portfolioRepository;
+        this.serverPort =  serverPort;
+    }
     @Override
     public List<PortfolioDto> List(PortfolioFilterDataModel filter){
         var list = portfolioRepository.findAll(PortfolioSpec.OrderDir(filter.getOrderDir(),filter.getOrderBy()));
@@ -46,7 +56,7 @@ public class PortfolioImplement implements  PortfolioService {
                     img.setPathImage(image.getPathImage());
                     img.setTypeImage(image.getTypeImage());
                     img.setSize(image.getSizeImage());
-                    img.setHostUrl("http://localhost:8989");
+                    img.setHostUrl("http://localhost:"+this.serverPort);
                     img.setName(image.getNameImage());
                     pathImage.add(img);
                 }
@@ -64,7 +74,7 @@ public class PortfolioImplement implements  PortfolioService {
       
         if(model.getUploads()!=null){
             for (UploadDataModel elm : model.getUploads()) {
-                var upload = new UploadImageHandler(PortfolioHelper.FolderName.Portfolio.toLowerCase());
+                var upload = new UploadImageHandler(PortfolioHelper.FolderName.Portfolio.toLowerCase(),this.serverPort);
                 var dto = upload.Upload(elm);
                 var image = new DB_IMAGE();
                 image.setHostImage(dto.getHostName());
@@ -97,7 +107,7 @@ public class PortfolioImplement implements  PortfolioService {
 
     @Override
     public Boolean DeleteImage(Long imageId){
-        var upload = new UploadImageHandler(PortfolioHelper.FolderName.Portfolio.toLowerCase());
+        var upload = new UploadImageHandler(PortfolioHelper.FolderName.Portfolio.toLowerCase(),this.serverPort);
         var image = imageRepository.findById(imageId);
         if(!image.isEmpty()){
             upload.DeleteImage(image.get().getNameImage());

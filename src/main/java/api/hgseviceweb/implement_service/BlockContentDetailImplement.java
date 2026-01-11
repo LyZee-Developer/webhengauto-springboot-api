@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import api.hgseviceweb.data_model.block_content_detail.BlockContentDetailDataModel;
@@ -19,12 +20,18 @@ import api.hgseviceweb.service.BlockContentDetailService;
 import api.hgseviceweb.specification.BlockContentDetailSpec;
 import api.hgseviceweb.util.UploadImageHandler;
 
-import lombok.AllArgsConstructor;
+// import lombok.AllArgsConstructor;
 @Service
-@AllArgsConstructor
+// @AllArgsConstructor
 public class BlockContentDetailImplement implements  BlockContentDetailService {
     private final BlockContentDetailRepository  blockContentDetailRepository;
     private final ImageRepository  imageRepository;
+    private final String serverPort;
+    public BlockContentDetailImplement(BlockContentDetailRepository blockContentDetailRepository,ImageRepository imageRepository,@Value("${server.port}") String serverPort){
+        this.imageRepository = imageRepository;
+        this.blockContentDetailRepository = blockContentDetailRepository;
+        this.serverPort = serverPort;
+    }
     @Override
     public List<BlockContentDetailDto> List(BlockContentDetailFilterDataModel filter){
         var list = blockContentDetailRepository.findAll(BlockContentDetailSpec.Search(filter.getSearch()).and(BlockContentDetailSpec.OrderDir(filter.getOrderDir(),filter.getOrderBy())));
@@ -56,7 +63,7 @@ public class BlockContentDetailImplement implements  BlockContentDetailService {
         var data = blockContentDetailRepository.save(mapData);
         var PathImage= "";
         if(model.getUpload()!=null){
-            var upload = new UploadImageHandler(BlockContentDetailHelper.FolderName.icon.toLowerCase());
+            var upload = new UploadImageHandler(BlockContentDetailHelper.FolderName.icon.toLowerCase(),this.serverPort);
             var dto = upload.Upload(model.getUpload());
             image.setHostImage(dto.getHostName());
             image.setNameImage(dto.getFilename());
@@ -75,7 +82,7 @@ public class BlockContentDetailImplement implements  BlockContentDetailService {
     @Override
     public BlockContentDetailDto Update(BlockContentDetailDataModel model){
          var image = imageRepository.findByRefIdAndType(model.getId(), BlockContentDetailHelper.FolderName.icon);
-        var upload = new UploadImageHandler(BlockContentDetailHelper.FolderName.icon.toLowerCase());
+        var upload = new UploadImageHandler(BlockContentDetailHelper.FolderName.icon.toLowerCase(),this.serverPort);
         var PathImage="";
         var data = blockContentDetailRepository.findById(model.getId()).get();
         data.setUpdatedBy(GlobalHelper.Str.ADMIN);

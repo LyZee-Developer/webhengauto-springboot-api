@@ -9,10 +9,8 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import org.springframework.core.env.Environment;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import api.hgseviceweb.config.PortReader;
@@ -26,16 +24,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UploadImageHandler {
-    @Autowired
-    private Environment env;
-    @Value("${server.port}")
-    private int port;
+    private String port;
     private PortReader portReader;
     private String FolderName;
     private String folderUpload;
-    public UploadImageHandler(String FolderName) {
+    public UploadImageHandler(String FolderName,String port) {
         this.FolderName = FolderName.toLowerCase();
         this.folderUpload = "upload/"+this.FolderName;
+        this.port= port; 
     }
     @Async
     public UploadDto Upload(MultipartFile file) {
@@ -54,7 +50,7 @@ public class UploadImageHandler {
             // Save file
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             dto.setFilename(fileName);
-            dto.setHostName("localhost:8989");
+            dto.setHostName("localhost:"+this.port);
             dto.setPathFilename(folderUpload+"/"+fileName);
             dto.setType(file.getContentType());
             dto.setSize(file.getSize());
@@ -69,12 +65,8 @@ public class UploadImageHandler {
         try {
             var global = new GlobalHelper();
             var workingDir = global.getCurrentPathUpload();
-            // int port2 = Integer.parseInt(env.getProperty("server.port"));
-            System.out.print("port is "+ this.port);
-            // System.out.print("port is "+ port2);
             var dto = new UploadDto();
-              String base64 = model.getBase64Text();
-
+            String base64 = model.getBase64Text();
             // REMOVE data:image/...;base64, part
             if (base64.contains(",")) {
                 base64 = base64.substring(base64.indexOf(",") + 1);
@@ -92,7 +84,7 @@ public class UploadImageHandler {
             // Save file
             Files.write(filePath, fileBytes);
             dto.setFilename(fileName);
-            dto.setHostName("localhost:8989");
+            dto.setHostName("localhost:"+this.port);
             dto.setPathFilename(this.folderUpload+"/"+fileName);
             dto.setType(model.getTypeImage());
             dto.setSize(model.getSize());
@@ -120,7 +112,7 @@ public class UploadImageHandler {
                 // Save file
                 Files.write(filePath, fileBytes);
                 dto.setFilename(fileName);
-                dto.setHostName("localhost:8989");
+                dto.setHostName("localhost:"+this.port);
                 dto.setPathFilename(this.folderUpload+"/"+fileName);
                 dto.setType(upload.getTypeImage());
                 dto.setSize(upload.getSize());

@@ -1,6 +1,5 @@
 package api.hgseviceweb.controller;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +13,10 @@ import api.hgseviceweb.implement_service.AuthAccessImplement;
 import api.hgseviceweb.implement_service.UserImplement;
 import api.hgseviceweb.repository.AuthAccessRepository;
 import api.hgseviceweb.security.ApiResponseHandler;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+//@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class AuthAccessController {
     private final AuthAccessImplement authAccessImplement;

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import api.hgseviceweb.data_model.car.CarDataModel;
@@ -18,12 +19,24 @@ import api.hgseviceweb.repository.ImageRepository;
 import api.hgseviceweb.service.CarService;
 import api.hgseviceweb.specification.CarSpec;
 import api.hgseviceweb.util.UploadImageHandler;
-import lombok.AllArgsConstructor;
+// import lombok.AllArgsConstructor;
 @Service
-@AllArgsConstructor
+// @AllArgsConstructor
 public class CarImplement implements  CarService {
     private final CarRepository  carRepository; 
     private final ImageRepository  imageRepository;
+    private final String serverPort;
+    public CarImplement(
+            CarRepository carRepository,
+            ImageRepository imageRepository,
+            @Value("${server.port}") String serverPort
+    ) {
+        this.carRepository = carRepository;
+        this.imageRepository = imageRepository;
+        this.serverPort = serverPort;
+    }
+
+
     @Override
     public List<CarDto> List(CarFilterDataModel filter){
         var list = carRepository.findAll(CarSpec.Search(filter.getSearch()).and(CarSpec.OrderDir(filter.getOrderDir(),filter.getOrderBy())));
@@ -51,10 +64,11 @@ public class CarImplement implements  CarService {
         var mapData = CarMapper.MaptoEntity(model);
         var data = carRepository.save(mapData);
         var image = new DB_IMAGE();
+        // System.out.print("serverPort"+serverPort);
         //upload image
         var PathImage = "";
         if(model.getUpload().getBase64Text()!=null){
-            var upload = new UploadImageHandler(CarHelper.FolderName.Car);
+            var upload = new UploadImageHandler(CarHelper.FolderName.Car,this.serverPort);
             var dto = upload.Upload(model.getUpload());
             image.setHostImage(dto.getHostName());
             image.setNameImage(dto.getFilename());
@@ -75,7 +89,7 @@ public class CarImplement implements  CarService {
         var PathImage = "";
         var data = carRepository.findById(model.getId()).get();
         var image = imageRepository.findByRefIdAndType(model.getId(), CarHelper.FolderName.Car.toUpperCase());
-        var upload = new UploadImageHandler(CarHelper.FolderName.Car);
+        var upload = new UploadImageHandler(CarHelper.FolderName.Car,this.serverPort);
         data.setName(model.getName());
         data.setNameEn(model.getEnglishName());
         data.setUpdatedBy(GlobalHelper.Str.ADMIN);
@@ -118,7 +132,7 @@ public class CarImplement implements  CarService {
 
     @Override
     public Boolean DeleteImage(Long imageId){
-        var upload = new UploadImageHandler(CarHelper.FolderName.Car);
+        var upload = new UploadImageHandler(CarHelper.FolderName.Car,this.serverPort);
         var image = imageRepository.findById(imageId);
         if(!image.isEmpty()){
             upload.DeleteImage(image.get().getNameImage());
