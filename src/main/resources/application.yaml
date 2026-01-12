@@ -31,6 +31,10 @@ spring:
   #   initialize-schema: always
 server:
   port: 4433
+  
+app:
+  upload:
+    base-path: /app/upload
 
 file:
   upload-img-dir: src/main/resources/static/upload
