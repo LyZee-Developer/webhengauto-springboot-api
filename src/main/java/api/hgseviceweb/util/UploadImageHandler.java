@@ -39,7 +39,8 @@ public class UploadImageHandler {
             var global = new GlobalHelper();
             var workingDir = global.getCurrentPathUpload();
             var dto = new UploadDto();
-            var folderPath = workingDir + "\\upload\\" + this.FolderName;
+            // var folderPath = workingDir + "\\upload\\" + this.FolderName;
+            var folderPath = "app/upload/" + this.FolderName;
             // Create folder if not exists
             Path uploadPath = Paths.get(folderPath);
             if (!Files.exists(uploadPath))
@@ -72,8 +73,8 @@ public class UploadImageHandler {
                 base64 = base64.substring(base64.indexOf(",") + 1);
             }
             byte[] fileBytes = Base64.getDecoder().decode(base64);
-            // var folderPath = GlobalHelper.Path.upload + "\\" + this.FolderName;
-            var folderPath = workingDir + "\\upload\\" + this.FolderName;
+            // var folderPath = workingDir + "\\upload\\" + this.FolderName;
+            var folderPath = "app/upload/" + this.FolderName;
             // Create folder if not exists
             Path uploadPath = Paths.get(folderPath);
             if (!Files.exists(uploadPath))
