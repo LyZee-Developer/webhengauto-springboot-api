@@ -34,11 +34,11 @@ public class TestUploadFile {
             String folder = uploadBasePath + "/test";
             Files.createDirectories(Paths.get(folder));
 
-            // String filename = System.currentTimeMillis()
-            //         + "_" + file.getOriginalFilename().replace(" ", "_");
+            String filename = System.currentTimeMillis()
+                    + "_333" + file.getOriginalFilename().replace(" ", "_");
 
-            // Path filePath = Paths.get(folder, filename);
-            // Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            Path filePath = Paths.get(folder, filename);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
             // String previewUrl = "/upload/test/" + filename;
 
