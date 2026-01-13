@@ -31,10 +31,17 @@ public class PortfolioImplement implements  PortfolioService {
     private final PortfolioRepository  portfolioRepository;
     private final ImageRepository  imageRepository;
     private final String  serverPort;
-    public PortfolioImplement(PortfolioRepository portfolioRepository,ImageRepository imageRepository,@Value("${server.port}") String serverPort){
+    private final String  basePath;
+    public PortfolioImplement(
+        PortfolioRepository portfolioRepository,
+        ImageRepository imageRepository,
+        @Value("${server.port}") String serverPort,
+        @Value("${app.upload.base-path}") String basePath
+        ){
         this.imageRepository =  imageRepository;
         this.portfolioRepository =  portfolioRepository;
         this.serverPort =  serverPort;
+        this.basePath =  basePath;
     }
     @Override
     public List<PortfolioDto> List(PortfolioFilterDataModel filter){
@@ -74,7 +81,7 @@ public class PortfolioImplement implements  PortfolioService {
       
         if(model.getUploads()!=null){
             for (UploadDataModel elm : model.getUploads()) {
-                var upload = new UploadImageHandler(PortfolioHelper.FolderName.Portfolio.toLowerCase(),this.serverPort);
+                var upload = new UploadImageHandler(PortfolioHelper.FolderName.Portfolio.toLowerCase(),this.serverPort,this.basePath);
                 var dto = upload.Upload(elm);
                 var image = new DB_IMAGE();
                 image.setHostImage(dto.getHostName());
@@ -107,7 +114,7 @@ public class PortfolioImplement implements  PortfolioService {
 
     @Override
     public Boolean DeleteImage(Long imageId){
-        var upload = new UploadImageHandler(PortfolioHelper.FolderName.Portfolio.toLowerCase(),this.serverPort);
+        var upload = new UploadImageHandler(PortfolioHelper.FolderName.Portfolio.toLowerCase(),this.serverPort,this.basePath);
         var image = imageRepository.findById(imageId);
         if(!image.isEmpty()){
             upload.DeleteImage(image.get().getNameImage());

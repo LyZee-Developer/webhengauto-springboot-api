@@ -26,10 +26,17 @@ public class UserImplement implements  UserService {
     private final UserRepository  userRepository;
     private final ImageRepository  imageRepository;
     private final String  serverPort;
-    public UserImplement(UserRepository userRepository,ImageRepository imageRepository,@Value("${server.port}") String serverPort){
+    private final String  basePath;
+    public UserImplement(
+        UserRepository userRepository,
+        ImageRepository imageRepository,
+        @Value("${server.port}") String serverPort,
+        @Value("${app.upload.base-path}") String basePath
+        ){
         this.userRepository = userRepository;
         this.imageRepository = imageRepository;
         this.serverPort = serverPort;
+        this.basePath = basePath;
     }
     @Override
     public List<UserDto> List(UserFilterDataModel filter){
@@ -59,7 +66,7 @@ public class UserImplement implements  UserService {
         var image = new DB_IMAGE();
         var PathImage = "";
         if(model.getUpload()!=null){
-            var upload = new UploadImageHandler(UserHelper.FolderName.User,this.serverPort);
+            var upload = new UploadImageHandler(UserHelper.FolderName.User,this.serverPort,this.basePath);
             var dto = upload.Upload(model.getUpload());
             image.setHostImage(dto.getHostName());
             image.setNameImage(dto.getFilename());
@@ -79,7 +86,7 @@ public class UserImplement implements  UserService {
     public UserDto Update(UserDataModel model){
         var image = imageRepository.findByRefIdAndType(model.getId(), UserHelper.FolderName.User);
         var data = userRepository.findById(model.getId()).get();
-        var upload = new UploadImageHandler(UserHelper.FolderName.User.toLowerCase(),this.serverPort);
+        var upload = new UploadImageHandler(UserHelper.FolderName.User.toLowerCase(),this.serverPort,this.basePath);
         var PathImage="";
         data.setName(model.getName());
         data.setNameEn(model.getEnglishName());
@@ -136,7 +143,7 @@ public class UserImplement implements  UserService {
     }
     @Override
     public Boolean DeleteImage(Long imageId){
-        var upload = new UploadImageHandler(UserHelper.FolderName.User.toLowerCase(),this.serverPort);
+        var upload = new UploadImageHandler(UserHelper.FolderName.User.toLowerCase(),this.serverPort,this.basePath);
         var image = imageRepository.findById(imageId);
         if(!image.isEmpty()){
             upload.DeleteImage(image.get().getNameImage());

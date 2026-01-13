@@ -27,10 +27,17 @@ public class BlockContentDetailImplement implements  BlockContentDetailService {
     private final BlockContentDetailRepository  blockContentDetailRepository;
     private final ImageRepository  imageRepository;
     private final String serverPort;
-    public BlockContentDetailImplement(BlockContentDetailRepository blockContentDetailRepository,ImageRepository imageRepository,@Value("${server.port}") String serverPort){
+    private final String basePath;
+    public BlockContentDetailImplement(
+        BlockContentDetailRepository blockContentDetailRepository,
+        ImageRepository imageRepository,
+        @Value("${server.port}") String serverPort,
+        @Value("${app.upload.base-path}") String basePath
+        ){
         this.imageRepository = imageRepository;
         this.blockContentDetailRepository = blockContentDetailRepository;
         this.serverPort = serverPort;
+        this.basePath = basePath;
     }
     @Override
     public List<BlockContentDetailDto> List(BlockContentDetailFilterDataModel filter){
@@ -63,7 +70,7 @@ public class BlockContentDetailImplement implements  BlockContentDetailService {
         var data = blockContentDetailRepository.save(mapData);
         var PathImage= "";
         if(model.getUpload()!=null){
-            var upload = new UploadImageHandler(BlockContentDetailHelper.FolderName.icon.toLowerCase(),this.serverPort);
+            var upload = new UploadImageHandler(BlockContentDetailHelper.FolderName.icon.toLowerCase(),this.serverPort,this.basePath);
             var dto = upload.Upload(model.getUpload());
             image.setHostImage(dto.getHostName());
             image.setNameImage(dto.getFilename());
@@ -82,7 +89,7 @@ public class BlockContentDetailImplement implements  BlockContentDetailService {
     @Override
     public BlockContentDetailDto Update(BlockContentDetailDataModel model){
          var image = imageRepository.findByRefIdAndType(model.getId(), BlockContentDetailHelper.FolderName.icon);
-        var upload = new UploadImageHandler(BlockContentDetailHelper.FolderName.icon.toLowerCase(),this.serverPort);
+        var upload = new UploadImageHandler(BlockContentDetailHelper.FolderName.icon.toLowerCase(),this.serverPort,this.basePath);
         var PathImage="";
         var data = blockContentDetailRepository.findById(model.getId()).get();
         data.setUpdatedBy(GlobalHelper.Str.ADMIN);

@@ -29,12 +29,12 @@ public class UploadImageHandler {
     private PortReader portReader;
     private String FolderName;
     private String folderUpload;
-    @Value("${app.upload.base-path}")
     private String uploadBasePath;
-    public UploadImageHandler(String FolderName,String port) {
+    public UploadImageHandler(String FolderName,String port,String basePath) {
         this.FolderName = FolderName.toLowerCase();
         this.folderUpload = "upload/"+this.FolderName;
         this.port= port; 
+        this.uploadBasePath = basePath;
     }
     @Async
     public UploadDto Upload(MultipartFile file) {
@@ -47,7 +47,7 @@ public class UploadImageHandler {
             // Create folder if not exists
             Path uploadPath = Paths.get(folderPath);
             if (!Files.exists(uploadPath))
-                Files.createDirectories(uploadPath);
+            Files.createDirectories(uploadPath);
             // Create storage path
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename().replace(" ", "_");
             Path filePath = uploadPath.resolve(fileName);

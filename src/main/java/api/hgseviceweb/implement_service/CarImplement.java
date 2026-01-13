@@ -26,14 +26,17 @@ public class CarImplement implements  CarService {
     private final CarRepository  carRepository; 
     private final ImageRepository  imageRepository;
     private final String serverPort;
+    private final String basePath;
     public CarImplement(
             CarRepository carRepository,
             ImageRepository imageRepository,
-            @Value("${server.port}") String serverPort
+            @Value("${server.port}") String serverPort,
+            @Value("${app.upload.base-path}") String basePath
     ) {
         this.carRepository = carRepository;
         this.imageRepository = imageRepository;
         this.serverPort = serverPort;
+        this.basePath = basePath;
     }
 
 
@@ -68,7 +71,7 @@ public class CarImplement implements  CarService {
         //upload image
         var PathImage = "";
         if(model.getUpload().getBase64Text()!=null){
-            var upload = new UploadImageHandler(CarHelper.FolderName.Car,this.serverPort);
+            var upload = new UploadImageHandler(CarHelper.FolderName.Car,this.serverPort,this.basePath);
             var dto = upload.Upload(model.getUpload());
             image.setHostImage(dto.getHostName());
             image.setNameImage(dto.getFilename());
@@ -89,7 +92,7 @@ public class CarImplement implements  CarService {
         var PathImage = "";
         var data = carRepository.findById(model.getId()).get();
         var image = imageRepository.findByRefIdAndType(model.getId(), CarHelper.FolderName.Car.toUpperCase());
-        var upload = new UploadImageHandler(CarHelper.FolderName.Car,this.serverPort);
+        var upload = new UploadImageHandler(CarHelper.FolderName.Car,this.serverPort,this.basePath);
         data.setName(model.getName());
         data.setNameEn(model.getEnglishName());
         data.setUpdatedBy(GlobalHelper.Str.ADMIN);
@@ -132,7 +135,7 @@ public class CarImplement implements  CarService {
 
     @Override
     public Boolean DeleteImage(Long imageId){
-        var upload = new UploadImageHandler(CarHelper.FolderName.Car,this.serverPort);
+        var upload = new UploadImageHandler(CarHelper.FolderName.Car,this.serverPort,this.basePath);
         var image = imageRepository.findById(imageId);
         if(!image.isEmpty()){
             upload.DeleteImage(image.get().getNameImage());

@@ -36,7 +36,11 @@ app:
   upload:
     base-path: /app/upload
 
-file:
-  upload-img-dir: src/main/resources/static/upload
+# file:
+#   upload-img-dir: src/main/resources/static/upload
   # upload-img-client: /images/**
   # upload-file-dir: filestorage/data/
+file:
+  upload-img-dir: filestorage/images/
+  upload-img-client: /images/**
+  upload-file-dir: filestorage/data/

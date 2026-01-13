@@ -27,10 +27,13 @@ public class OwnerInfoImplement implements  OwnerInfoService {
     private final OwnerInfoRepository  ownerInfoRepository;
     private final ImageRepository  imageRepository;
     private final String serverPort;
-    public OwnerInfoImplement(OwnerInfoRepository ownerInfoRepository, ImageRepository imageRepository,@Value("${server.port}") String port){
+    private final String basePath;
+    public OwnerInfoImplement(OwnerInfoRepository ownerInfoRepository, ImageRepository imageRepository,@Value("${server.port}") String port,@Value("${app.upload.base-path}") String basePath
+    ){
         this.serverPort = port;
         this.ownerInfoRepository = ownerInfoRepository;
         this.imageRepository = imageRepository;
+        this.basePath = basePath;
     }
     @Override
     public List<OwnerInfoDto> List(OwnerInfoFilterDataModel filter){
@@ -56,7 +59,7 @@ public class OwnerInfoImplement implements  OwnerInfoService {
         var data = ownerInfoRepository.save(mapData);
         var PathImage = "";
         if(model.getUpload()!=null){
-            var upload = new UploadImageHandler(OwnerInfoHelper.FolderName.Owner.toLowerCase(),this.serverPort);
+            var upload = new UploadImageHandler(OwnerInfoHelper.FolderName.Owner.toLowerCase(),this.serverPort,this.basePath);
             var dto = upload.Upload(model.getUpload());
             image.setHostImage(dto.getHostName());
             image.setNameImage(dto.getFilename());
@@ -75,7 +78,7 @@ public class OwnerInfoImplement implements  OwnerInfoService {
     @Override
     public OwnerInfoDto Update(OwnerInfoDataModel model){
         var image = imageRepository.findByRefIdAndType(model.getId(), OwnerInfoHelper.FolderName.Owner);
-        var upload = new UploadImageHandler(OwnerInfoHelper.FolderName.Owner.toLowerCase(),this.serverPort);
+        var upload = new UploadImageHandler(OwnerInfoHelper.FolderName.Owner.toLowerCase(),this.serverPort,this.basePath);
         var data = ownerInfoRepository.findById(model.getId()).get();
         var PathImage="";
         data.setName(model.getName());
@@ -131,7 +134,7 @@ public class OwnerInfoImplement implements  OwnerInfoService {
     }
      @Override
     public Boolean DeleteImage(Long imageId){
-        var upload = new UploadImageHandler(OwnerInfoHelper.FolderName.Owner.toLowerCase(),this.serverPort);
+        var upload = new UploadImageHandler(OwnerInfoHelper.FolderName.Owner.toLowerCase(),this.serverPort,this.basePath);
         var image = imageRepository.findById(imageId);
         if(!image.isEmpty()){
             upload.DeleteImage(image.get().getNameImage());
