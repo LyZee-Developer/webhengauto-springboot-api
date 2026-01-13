@@ -8,10 +8,16 @@ spring:
   #   password: Work@1234567890
   #   driver-class-name: org.postgresql.Driver
   # //Local
+  # datasource:
+  #   url: jdbc:postgresql://192.168.10:8004/hengautoservice-database
+  #   username: heng-auto-service
+  #   password: Work@1234567890
+  #   driver-class-name: org.postgresql.Driver
+
   datasource:
-    url: jdbc:postgresql://192.168.10:8004/hengautoservice-database
-    username: heng-auto-service
-    password: Work@1234567890
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: Work@123
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -36,11 +42,12 @@ app:
   upload:
     base-path: /app/upload
 
-# file:
-#   upload-img-dir: src/main/resources/static/upload
-  # upload-img-client: /images/**
-  # upload-file-dir: filestorage/data/
 file:
   upload-img-dir: upload/
   upload-img-client: /images/**
   upload-file-dir: filestorage/data/
+
+
+jwt:
+  secret: Work@1234567890TokenGenerateForUserLogin
+  expiration: 3600000 # 1 hour

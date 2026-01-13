@@ -76,8 +76,8 @@ public class UploadImageHandler {
                 base64 = base64.substring(base64.indexOf(",") + 1);
             }
             byte[] fileBytes = Base64.getDecoder().decode(base64);
-            // var folderPath = workingDir + "\\upload\\" + this.FolderName;
-            var folderPath = this.uploadBasePath+'/'+ this.FolderName;
+            var folderPath = workingDir + "\\upload\\" + this.FolderName; // local
+            // var folderPath = this.uploadBasePath+'/'+ this.FolderName; / server
             // Create folder if not exists
             Path uploadPath = Paths.get(folderPath);
             if (!Files.exists(uploadPath))
