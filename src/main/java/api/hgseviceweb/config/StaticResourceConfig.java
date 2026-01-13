@@ -15,8 +15,8 @@ public class StaticResourceConfig implements WebMvcConfigurer{
         // registry
         //     .addResourceHandler("/upload/**")
         //     .addResourceLocations("file:upload/");
-        registry.addResourceHandler(imageClientLocation)
-        .addResourceLocations("file:"+imageServerLocation);
+        registry.addResourceHandler("/images/**")
+        .addResourceLocations("file:upload");
             
     }
 }

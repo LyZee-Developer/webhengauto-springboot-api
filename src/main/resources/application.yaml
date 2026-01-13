@@ -41,6 +41,6 @@ app:
   # upload-img-client: /images/**
   # upload-file-dir: filestorage/data/
 file:
-  upload-img-dir: filestorage/images/
+  upload-img-dir: upload/
   upload-img-client: /images/**
   upload-file-dir: filestorage/data/
