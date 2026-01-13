@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,8 @@ public class UploadImageHandler {
     private PortReader portReader;
     private String FolderName;
     private String folderUpload;
+    @Value("${app.upload.base-path}")
+    private String uploadBasePath;
     public UploadImageHandler(String FolderName,String port) {
         this.FolderName = FolderName.toLowerCase();
         this.folderUpload = "upload/"+this.FolderName;
@@ -40,7 +43,7 @@ public class UploadImageHandler {
             var workingDir = global.getCurrentPathUpload();
             var dto = new UploadDto();
             // var folderPath = workingDir + "\\upload\\" + this.FolderName;
-            var folderPath = "app/upload/" + this.FolderName;
+            var folderPath = this.uploadBasePath+'/'+ this.FolderName;
             // Create folder if not exists
             Path uploadPath = Paths.get(folderPath);
             if (!Files.exists(uploadPath))
@@ -74,7 +77,7 @@ public class UploadImageHandler {
             }
             byte[] fileBytes = Base64.getDecoder().decode(base64);
             // var folderPath = workingDir + "\\upload\\" + this.FolderName;
-            var folderPath = "app/upload/" + this.FolderName;
+            var folderPath = this.uploadBasePath+'/'+ this.FolderName;
             // Create folder if not exists
             Path uploadPath = Paths.get(folderPath);
             if (!Files.exists(uploadPath))
